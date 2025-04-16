@@ -6,13 +6,14 @@ import openai
 TOKEN = os.environ['DISCORD_TOKEN']
 OPENAI_KEY = os.environ['OPENAI_KEY']
 
-
+# Set up the OpenAI API client
 openai.api_key = OPENAI_KEY
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.messages = True
 client = discord.Client(command_prefix='/', intents=intents)
+
 
 chat_history = []
 logged_in_user = None
@@ -22,7 +23,6 @@ def add_chat_history(chat_history, message):
   chat_history.append(message)
   chat_history = chat_history[-10:]
 
-
 def format_chat_history(chat_history):
   formatted_chat_history = "\n".join(
     [f"{message.author}: {message.content}" for message in chat_history])
@@ -31,13 +31,13 @@ def format_chat_history(chat_history):
 
 
 def generate_prompt(logged_in_user, chat_history):
-  prompt = """You are a professional healthcare AI.
+  prompt = f"""You are a professional healthcare AI.
 You make a friendly conversation with the students. You ask them how they are doing. You give them advice and support.
-You are very kind and helpful. you ask them which lessons did they have today"""
-  return prompt
-  {format_chat_history(chat_history)}
-  {logged_in_user}
+You are very kind and helpful. you ask them which lessons did they have today
+{format_chat_history(chat_history)}
+{logged_in_user}:"""
 
+  return prompt
 
 
 @client.event
@@ -52,7 +52,6 @@ async def on_message(message):
   print("Message Recieved")
 
   add_chat_history(chat_history, message)
-
   if message.author == client.user:
     return
 
@@ -70,6 +69,7 @@ async def on_message(message):
       max_tokens=2048,
       temperature=0.5,
     )
+
     response_text = response.choices[0].message.content
     if response_text:
         response_text = response_text.strip()
