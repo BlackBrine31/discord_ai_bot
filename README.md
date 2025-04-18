@@ -1,72 +1,63 @@
-Mental Health & Wellness AI Discord Bot 🤖💙
 
-A Python-based Discord bot designed to support students' mental health and wellness. This AI-powered assistant provides emotional support, study tips, relaxation techniques, and motivational advice to help students feel better.
+# Healthcare AI ChatBuddy 🤖💬
 
-Features ✨
-
-    Emotional Support: The bot responds empathetically to students feeling stressed, anxious, or overwhelmed.
-
-    Study Tips: Provides advice on time management, focus techniques, and exam preparation.
-
-    Motivational Messages: Sends uplifting quotes and encouragement.
-
-    Relaxation Techniques: Suggests breathing exercises, mindfulness tips, and quick stress-relief methods.
-
-    Customizable Responses: Easily modify prompts to fit your community’s needs.
-
-Prerequisites 📋
-
-    Python 3.8+
-
-    Discord Bot Token 
-    OpenAI API Key 
-
-Installation & Setup ⚙️
-1. Clone the Repository
+A Discord bot that provides healthcare advice, motivational quotes, jokes, and AI-powered conversation using Hugging Face's language models.
 
 
-2. Install Required Libraries
-  discord.py
-  openai
-  requests
+## Features ✨
 
+- 🩺 Professional healthcare advice and support
+- 🤖 AI-powered conversations using Hugging Face models
+- 😄 Fun jokes to lighten the mood
+- ✨ Motivational quotes for encouragement
+- 💬 Natural conversation flow
 
-3. Set Up Environment Variables
+## Commands 📚
 
-Create a .env file and add:
+| Command | Description |
+|---------|-------------|
+| `/ai <your question>` | Ask the AI anything |
+| `/joke` | Get a random joke |
+| `/motivation` | Receive an inspirational quote |
+| `/help` | Show all available commands |
 
-DISCORD_TOKEN=your_bot_token_here
-OPENAI_API_KEY=your_openai_api_key_here
+## Setup Instructions ⚙️
 
-4. Run the Bot
+### Prerequisites
+- Python 3.8+
+- [Discord bot token](https://discord.com/developers/applications)
+- [Hugging Face API token]((https://huggingface.co/settings/tokens))
 
+### Installation
+
+1. Clone the repository:
    
 
-How to Use the Bot 💬
+2. Install dependencies:
+   pip install discord.py requests python-dotenv
+ 
 
-Once the bot is online in your Discord server, users can interact with it by:
+3. Create a `.env` file and add your tokens:
+   
+   discord=YOUR_DISCORD_BOT_TOKEN
+   mylittlesmartAIstoken=YOUR_HUGGINGFACE_API_TOKEN
+   
 
-    Mentioning the bot (@BotName How can I reduce stress?)
+4. Run the bot:
+   
+## Configuration 🔧
 
-    Using a command prefix (e.g., !help) if configured
+You can customize the bot by modifying these variables in the code:
 
-Example Commands
+- `MODEL`: Change the Hugging Face model (default: `google/flan-t5-large`)
+- `CHARACTER_PERSONA`: Modify the AI's personality and behavior
+- Thinking messages and jokes can be easily expanded
 
-    "I'm feeling really anxious about exams..."
 
-    "Give me study tips for better focus."
 
-    "I need motivation right now."
 
-    "How can I relax quickly?"
+```
 
-Important Notes ⚠️
+A little note: This bot may give you a unnecassery response
 
-    ❗ This bot is not a substitute for professional mental health care.
-
-    ❗ Always encourage users to seek real help if they’re struggling severely.
-
-    ❗ Monitor bot responses to ensure they remain appropriate and helpful.
-
-Support & Contributions 🤝
-This bot is created by Nazim Isazadə for ADA SCHOOL AI CHALLENGE 2025
+This is a bot for ADA AI SCHOOL CHALLENGE by Nazim Isazade
