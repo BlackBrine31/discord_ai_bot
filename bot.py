@@ -1,82 +1,121 @@
-import os
 import discord
-import openai
-#from keep_alive import keep_alive
+import requests
+import os
+import random
+import json
 
-TOKEN = os.environ['DISCORD_TOKEN']
-OPENAI_KEY = os.environ['OPENAI_KEY']
+# Load tokens from environment variables
+DISCORD_BOT_TOKEN = os.getenv('discord')
+HUGGINGFACE_API_TOKEN = os.getenv('mylittlesmartAIstoken')
 
-# Set up the OpenAI API client
-openai.api_key = OPENAI_KEY
+# Choose model
+MODEL = "google/flan-t5-large"
+# MODEL = "mistralai/Mistral-7B-Instruct"
 
+# Set up Discord bot with message content intent
 intents = discord.Intents.default()
-intents.message_content = True
 intents.messages = True
-client = discord.Client(command_prefix='/', intents=intents)
+intents.message_content = True
+client = discord.Client(intents=intents)
 
+# Character personality prompt for Hugging Face
+CHARACTER_PERSONA = (
+    """"You are a professional healthcare AI.
+    You make a friendly conversation with the students. You ask them how they are doing. You give them advice and support.
+    You are very kind and helpful."""
+)
 
-chat_history = []
-logged_in_user = None
+# Function to query Hugging Face API
+def query_huggingface(message):
+    headers = {
+        "Authorization": f"Bearer {HUGGINGFACE_API_TOKEN}"
+    }
+    payload = {
+        "inputs": f"{CHARACTER_PERSONA}\nUser: {message}\nChatBuddy:",
+        "parameters": {
+            "max_new_tokens": 150,
+            "temperature": 0.7,
+            "top_p": 0.9,
+            "repetition_penalty": 1.1
+        }
+    }
 
-
-def add_chat_history(chat_history, message):
-  chat_history.append(message)
-  chat_history = chat_history[-10:]
-
-def format_chat_history(chat_history):
-  formatted_chat_history = "\n".join(
-    [f"{message.author}: {message.content}" for message in chat_history])
-
-  return formatted_chat_history
-
-
-def generate_prompt(logged_in_user, chat_history):
-  prompt = f"""You are a professional healthcare AI.
-You make a friendly conversation with the students. You ask them how they are doing. You give them advice and support.
-You are very kind and helpful. you ask them which lessons did they have today
-{format_chat_history(chat_history)}
-{logged_in_user}:"""
-
-  return prompt
-
-
-@client.event
-async def on_ready():
-  global logged_in_user
-  logged_in_user = client.user
-  print('We have logged in as {0.user} in main'.format(client))
-
-
-@client.event
-async def on_message(message):
-  print("Message Recieved")
-
-  add_chat_history(chat_history, message)
-  if message.author == client.user:
-    return
-
-  if client.user in message.mentions:
-    print(f"Responding to message: {message.content}")
-
-    prompt = generate_prompt(logged_in_user, chat_history)
-
-    response = openai.chat.completions.create(
-      model="gpt-3.5-turbo",
-      messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": prompt}
-      ],
-      max_tokens=2048,
-      temperature=0.5,
+    response = requests.post(
+        f"https://api-inference.huggingface.co/models/{MODEL}",
+        headers=headers,
+        json=payload
     )
 
-    response_text = response.choices[0].message.content
-    if response_text:
-        response_text = response_text.strip()
-        await message.channel.send(response_text)
+    if response.status_code == 200:
+        result = response.json()
+        if isinstance(result, list) and "generated_text" in result[0]:
+            generated = result[0]["generated_text"]
+            reply = generated.replace(message, "").strip()
+            return reply if reply else "🤔 I couldn't come up with a response this time!"
+        elif isinstance(result, dict) and "generated_text" in result:
+            return result["generated_text"]
+        elif isinstance(result, dict) and "error" in result:
+            return "🕒 The model is still warming up, please try again shortly."
+        else:
+            return str(result)
     else:
-        await message.channel.send("I apologize, but I couldn't generate a response.")
+        return f"❌ Error: API call failed with status code {response.status_code}"
 
-#keep_alive()
+# Bot startup message
+@client.event
+async def on_ready():
+    print(f"🤖 ChatBuddy is online as {client.user} and ready to assist!")
 
-client.run(TOKEN)
+# Handle incoming messages
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+
+    user_message = message.content.lower()
+
+    if user_message.startswith("/help"):
+        help_text = (
+            "📚 **ChatBuddy Commands:**\n"
+            "`/ai <your question>` – Ask me anything, I'll try to help/\n"
+            "`/inspire` – Get an inspirational quote.\n"
+            "`/joke` – Want a laugh? I got you.\n"
+            "`/help` – Show this help message.\n"
+        )
+        await message.channel.send(help_text)
+        return
+
+    elif user_message.startswith("/joke"):
+        jokes = [
+            "Why did the computer get cold? Because it left its Windows open! 🧊",
+            "I'm reading a book on anti-gravity. It's impossible to put down! 😄",
+            "Why did the robot go on vacation? It needed to recharge! 🔋",
+        ]
+        await message.channel.send(random.choice(jokes))
+        return
+
+    elif user_message.startswith("/ai"):
+        user_input = message.content[4:].strip()
+        if not user_input:
+            await message.channel.send("✏️ Please type your question after `/ai`.")
+            return
+
+        thinking_lines = [
+            "🤖 Thinking really hard...",
+            "🔍 Looking that up in my brain-database...",
+            "💡 One moment while I craft a smart answer...",
+            "✨ Summoning the AI powers..."
+        ]
+        await message.channel.send(random.choice(thinking_lines))
+
+        response = query_huggingface(user_input)
+        await message.channel.send(response)
+    elif user_message.startswith("/motivation"):
+        response = requests.get("https://zenquotes.io/api/random")
+        json_data = json.loads(response.text)
+        quote = f"✨ {json_data[0]['q']} -{json_data[0]['a']}"
+        await message.channel.send(quote)
+
+
+# Run the bot
+client.run(DISCORD_BOT_TOKEN)
