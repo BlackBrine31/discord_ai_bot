@@ -40,7 +40,7 @@ A Discord bot that provides healthcare advice, motivational quotes, jokes, and A
 3. Create a `.env` file and add your tokens:
    
    discord=YOUR_DISCORD_BOT_TOKEN
-   mylittlesmartAIstoken=YOUR_HUGGINGFACE_API_TOKEN
+   hugging_face=YOUR_HUGGINGFACE_API_TOKEN
    
 
 4. Run the bot:
