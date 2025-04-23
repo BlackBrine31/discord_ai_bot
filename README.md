@@ -26,7 +26,7 @@ A Discord bot that provides healthcare advice, motivational quotes, jokes, and A
 ### Prerequisites
 - Python 3.8+
 - [Discord bot token](https://discord.com/developers/applications)
-- [[Hugging Face token](https://huggingface.co/settings/tokens)
+- [Hugging Face token](https://huggingface.co/settings/tokens)
 
 ### Installation
 
