@@ -17,6 +17,7 @@ A Discord bot that provides healthcare advice, motivational quotes, jokes, and A
 | Command | Description |
 |---------|-------------|
 | `/ai <your question>` | Ask the AI anything |
+ `/aistyle <your style>` | Change AI's personality |
 | `/joke` | Get a random joke |
 | `/motivation` | Receive an inspirational quote |
 | `/help` | Show all available commands |
