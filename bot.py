@@ -10,7 +10,7 @@ HUGGINGFACE_API_TOKEN = os.getenv('mylittlesmartAIstoken')
 
 # Choose model
 MODEL = "google/flan-t5-large"
-# MODEL = "mistralai/Mistral-7B-Instruct"
+#MODEL = "mistralai/Mistral-7B-Instruct"
 
 # Set up Discord bot with message content intent
 intents = discord.Intents.default()
@@ -93,7 +93,13 @@ async def on_message(message):
         ]
         await message.channel.send(random.choice(jokes))
         return
-
+    elif user_message.startswith("/aistyle"):
+        user_input = message.content[8:].strip()
+        if user_input:
+            CHARACTER_PERSONA = user_input
+            await message.channel.send("Character personality updated!")
+        else:
+            await message.channel.send("You need to specify a new personality!")
     elif user_message.startswith("/ai"):
         user_input = message.content[4:].strip()
         if not user_input:
@@ -115,6 +121,7 @@ async def on_message(message):
         json_data = json.loads(response.text)
         quote = f"✨ {json_data[0]['q']} -{json_data[0]['a']}"
         await message.channel.send(quote)
+
 
 
 # Run the bot
